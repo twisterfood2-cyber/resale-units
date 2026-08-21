@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>وحدات ريسيل | Digital Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2942;
+    --navy-dark: #0a1c2e;
+    --gold: #c9992e;
+    --gold-light: #f4e6c8;
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --border: #e2e5ea;
+    --text: #1c2530;
+    --muted: #6b7684;
+    --whatsapp: #25d366;
+    --whatsapp-dark: #1ea952;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+    direction: rtl;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  button, input, select { font-family: inherit; }
+
+  /* ============ Header ============ */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: #fff;
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .header-top {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-badge {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 20px; color: var(--navy);
+    flex-shrink: 0;
+  }
+  .brand-text h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .brand-text p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--gold-light);
+    opacity: 0.85;
+  }
+  .header-whatsapp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--whatsapp);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+  }
+  .header-whatsapp:hover { background: var(--whatsapp-dark); }
+
+  /* ============ Hero ============ */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 20px 32px;
+    text-align: center;
+  }
+  .hero h2 {
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 900;
+    margin: 0 0 10px;
+    line-height: 1.35;
+  }
+  .hero h2 span { color: var(--gold); }
+  .hero p {
+    margin: 0 auto;
+    max-width: 620px;
+    color: var(--gold-light);
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
+  /* ============ Filters ============ */
+  .filters-wrap {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .filters {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    align-items: end;
+  }
+  .filter-field label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .filter-field select, .filter-field input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .filter-field select:focus, .filter-field input:focus {
+    border-color: var(--gold);
+  }
+  .filter-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    padding: 11px 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--navy); color: #fff; flex: 1; }
+  .btn-primary:hover { background: var(--navy-dark); }
+  .btn-ghost { background: var(--bg); color: var(--muted); border: 2px solid var(--border); }
+  .btn-ghost:hover { background: var(--border); }
+
+  /* ============ Results ============ */
+  .results-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px 60px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(15,41,66,0.12);
+  }
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--bg) center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px;
+    position: relative;
+  }
+  .card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+  .card-body {
+    padding: 16px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 0;
+  }
+  .card-sub {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: -6px 0 0;
+  }
+  .card-price {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+  }
+  .card-price small {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .card-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .spec-chip {
+    background: var(--gold-light);
+    color: var(--navy);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 8px;
+  }
+  .card-footer {
+    margin-top: auto;
+    padding-top: 10px;
+  }
+  .card-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--whatsapp);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+  }
+  .card-whatsapp:hover { background: var(--whatsapp-dark); }
+
+  /* ============ States ============ */
+  .state-box {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .state-box .icon { font-size: 44px; margin-bottom: 12px; }
+  .state-box h3 { color: var(--navy); font-size: 19px; margin: 0 0 6px; }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 4px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    text-align: center;
+    padding: 26px 20px 34px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  @media (max-width: 640px) {
+    .header-top { flex-wrap: wrap; }
+    .header-whatsapp span.full-text { display: none; }
+    .filters { grid-template-columns: repeat(2, 1fr); }
+    .filter-actions { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-badge">D</div>
+      <div class="brand-text">
+        <h1>وحدات ريسيل</h1>
+        <p>Digital Real Estate</p>
+      </div>
+    </div>
+    <a class="header-whatsapp" id="headerWhatsapp" href="#" target="_blank" rel="noopener">
+      <span>💬</span><span class="full-text">تواصل معانا</span>
+    </a>
+  </div>
+  <div class="hero">
+    <h2>وحدات ريسيل <span>بأسعار مميزة</span> جاهزة للمعاينة</h2>
+    <p>تصفّح الوحدات المعروضة للبيع من أصحابها مباشرة، وتواصل معانا في أي وقت لمعرفة تفاصيل أكتر — الخدمة مجانية بالكامل.</p>
+  </div>
+</header>
+
+<div class="filters-wrap">
+  <div class="filters">
+    <div class="filter-field">
+      <label>المدينة</label>
+      <select id="fCity"><option value="">الكل</option></select>
+    </div>
+    <div class="filter-field">
+      <label>المنطقة</label>
+      <select id="fDistrict"><option value="">الكل</option></select>
+    </div>
+    <div class="filter-field">
+      <label>نوع العقار</label>
+      <select id="fType"><option value="">الكل</option></select>
+    </div>
+    <div class="filter-field">
+      <label>المطور</label>
+      <select id="fDeveloper"><option value="">الكل</option></select>
+    </div>
+    <div class="filter-field">
+      <label>أقل سعر</label>
+      <input type="number" id="fMinPrice" placeholder="بدون حد أدنى">
+    </div>
+    <div class="filter-field">
+      <label>أعلى سعر</label>
+      <input type="number" id="fMaxPrice" placeholder="بدون حد أقصى">
+    </div>
+    <div class="filter-field">
+      <label>بحث</label>
+      <input type="text" id="fKeyword" placeholder="اسم مشروع، منطقة...">
+    </div>
+    <div class="filter-actions">
+      <button class="btn btn-primary" id="applyFiltersBtn">بحث</button>
+      <button class="btn btn-ghost" id="resetFiltersBtn">تفريغ</button>
+    </div>
+  </div>
+</div>
+
+<div class="results-bar">
+  <span id="resultsCount">جاري تحميل الوحدات...</span>
+</div>
+
+<div id="content"></div>
+
+<footer>
+  خدمة عرض وحدات الريسيل من Digital Real Estate — مجانًا لوجه الله تعالى 🤍
+</footer>
+
+<script>
+/* ============================================================
+ * ⚠️ الإعداد الوحيد المطلوب: الصق رابط الـ Web App بتاع Apps Script هنا
+ * (اللي بتاخده من Deploy → New deployment بعد ما تنشر Code.gs)
+ * ============================================================ */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAbUsJH_44MWngzSeFMZ-OHg2hcIjZydb0VP3wHCIuw_FElZfmS7JsmGD3Km03hGkt7A/exec";
+
+/* رقم الواتساب اللي هيتواصل عليه العميل مع المكتب */
+const WHATSAPP_NUMBER = "201016908888"; // 01016908888 بصيغة دولية
+
+let allFilterOptions = { cities: [], districts: [], propertyTypes: [], developers: [] };
+
+function buildWhatsappLink(unit) {
+  const project = unit["Project Name"] || "";
+  const city = unit["City"] || "";
+  const id = unit["Unit ID"] || "";
+  const text = `السلام عليكم، أنا مهتم بالوحدة رقم ${id} في مشروع ${project} - ${city}. ممكن أعرف تفاصيل أكتر؟`;
+  return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+}
+
+function setHeaderWhatsapp() {
+  const text = "السلام عليكم، حابب أعرف أكتر عن وحدات الريسيل المعروضة عندكم";
+  document.getElementById("headerWhatsapp").href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+}
+
+function formatPrice(n) {
+  const num = Number(n);
+  if (!num) return "السعر عند الطلب";
+  return num.toLocaleString("en-US") + " جنيه";
+}
+
+function unitCardHtml(unit) {
+  const images = String(unit["Images"] || "").split(",").map(s => s.trim()).filter(Boolean);
+  const imgStyle = images.length ? `style="background-image:url('${images[0]}')"` : "";
+  const badge = unit["Listing Type"] === "ريسيل" ? "ريسيل" : "";
+
+  const specs = [];
+  if (unit["Unit Area (sqm)"]) specs.push(unit["Unit Area (sqm)"] + " م²");
+  if (unit["Rooms"]) specs.push(unit["Rooms"] + " غرف");
+  if (unit["Bathrooms"]) specs.push(unit["Bathrooms"] + " حمام");
+  if (unit["Floor"]) specs.push("الدور " + unit["Floor"]);
+  if (unit["Finishing"]) specs.push(unit["Finishing"]);
+
+  return `
+    <div class="card">
+      <div class="card-img" ${imgStyle}>
+        ${images.length ? "" : "📷 لا توجد صورة"}
+        ${badge ? `<span class="card-badge">${badge}</span>` : ""}
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">${unit["Project Name"] || "بدون اسم"}</h3>
+        <p class="card-sub">${unit["Developer Name"] || ""} — ${unit["City"] || ""} ${unit["Area/District"] ? "/ " + unit["Area/District"] : ""}</p>
+        <div class="card-price">${formatPrice(unit["Price"])}</div>
+        <div class="card-specs">
+          ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
+        </div>
+        <div class="card-footer">
+          <a class="card-whatsapp" href="${buildWhatsappLink(unit)}" target="_blank" rel="noopener">
+            💬 تواصل عبر واتساب
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLoading() {
+  document.getElementById("content").innerHTML = `
+    <div class="state-box">
+      <div class="spinner"></div>
+      <h3>جاري تحميل الوحدات...</h3>
+    </div>`;
+}
+
+function renderError(msg) {
+  document.getElementById("content").innerHTML = `
+    <div class="state-box">
+      <div class="icon">⚠️</div>
+      <h3>حصل خطأ في تحميل البيانات</h3>
+      <p>${msg}</p>
+    </div>`;
+}
+
+function renderEmpty() {
+  document.getElementById("content").innerHTML = `
+    <div class="state-box">
+      <div class="icon">🔍</div>
+      <h3>مفيش وحدات مطابقة للبحث</h3>
+      <p>جرب تغيّر الفلاتر أو تفضّيها كلها</p>
+    </div>`;
+}
+
+function renderUnits(units) {
+  document.getElementById("resultsCount").textContent = `${units.length} وحدة متاحة`;
+  if (units.length === 0) { renderEmpty(); return; }
+  document.getElementById("content").innerHTML =
+    `<div class="grid">${units.map(unitCardHtml).join("")}</div>`;
+}
+
+function populateSelect(id, values) {
+  const el = document.getElementById(id);
+  const current = el.value;
+  el.innerHTML = '<option value="">الكل</option>' + values.map(v => `<option value="${v}">${v}</option>`).join("");
+  el.value = current;
+}
+
+async function loadFilterOptions() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=filters");
+    const data = await res.json();
+    if (!data.success) return;
+    allFilterOptions = data.options;
+    populateSelect("fCity", allFilterOptions.cities || []);
+    populateSelect("fDistrict", allFilterOptions.districts || []);
+    populateSelect("fType", allFilterOptions.propertyTypes || []);
+    populateSelect("fDeveloper", allFilterOptions.developers || []);
+  } catch (err) {
+    // فشل تحميل الفلاتر مش مشكلة كبيرة - البحث الأساسي يفضل شغال
+    console.error("تعذر تحميل خيارات الفلاتر", err);
+  }
+}
+
+async function loadUnits() {
+  renderLoading();
+  const params = new URLSearchParams({
+    action: "list",
+    city: document.getElementById("fCity").value,
+    district: document.getElementById("fDistrict").value,
+    propertyType: document.getElementById("fType").value,
+    developer: document.getElementById("fDeveloper").value,
+    minPrice: document.getElementById("fMinPrice").value,
+    maxPrice: document.getElementById("fMaxPrice").value,
+    keyword: document.getElementById("fKeyword").value
+  });
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?" + params.toString());
+    const data = await res.json();
+    if (!data.success) { renderError(data.message || "خطأ غير معروف"); return; }
+    renderUnits(data.units || []);
+  } catch (err) {
+    renderError("تعذر الاتصال بالخادم. تأكد من الاتصال بالإنترنت وحاول تاني.");
+    console.error(err);
+  }
+}
+
+document.getElementById("applyFiltersBtn").addEventListener("click", loadUnits);
+document.getElementById("resetFiltersBtn").addEventListener("click", function () {
+  document.getElementById("fCity").value = "";
+  document.getElementById("fDistrict").value = "";
+  document.getElementById("fType").value = "";
+  document.getElementById("fDeveloper").value = "";
+  document.getElementById("fMinPrice").value = "";
+  document.getElementById("fMaxPrice").value = "";
+  document.getElementById("fKeyword").value = "";
+  loadUnits();
+});
+document.getElementById("fKeyword").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") loadUnits();
+});
+
+setHeaderWhatsapp();
+loadFilterOptions();
+loadUnits();
+</script>
+</body>
+</html>
