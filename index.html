@@ -420,10 +420,6 @@
     background: linear-gradient(135deg, #1e7145 0%, #164f31 100%);
     border-radius: 12px;
     padding: 14px 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
   .resale-box-title { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; text-align: right; }
   .resale-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
@@ -516,6 +512,11 @@
   /* ============ تفاصيل إضافية (مقدم / أقساط / تسليم / ملاحظات...) ============ */
   .unit-extra {
     display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .unit-extra.open { display: flex; }
+  .unit-extra-text {
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -525,10 +526,9 @@
     color: var(--text);
     text-align: right;
   }
-  .unit-extra.open { display: block; }
-  .unit-extra div { margin-bottom: 3px; }
-  .unit-extra div:last-child { margin-bottom: 0; }
-  .unit-extra b { color: var(--navy); font-weight: 800; }
+  .unit-extra-text div { margin-bottom: 3px; }
+  .unit-extra-text div:last-child { margin-bottom: 0; }
+  .unit-extra-text b { color: var(--navy); font-weight: 800; }
 
   .card-specs {
     display: flex;
@@ -854,7 +854,7 @@ function buildExtraDetailsHtml(unit) {
   if (unit["Notes"]) rows.push(`<div><b>ملاحظات:</b> ${unit["Notes"]}</div>`);
 
   if (rows.length === 0) return "";
-  return rows.join("");
+  return `<div class="unit-extra-text">${rows.join("")}</div>`;
 }
 
 let cardCounter = 0;
@@ -878,6 +878,7 @@ function unitCardHtml(unit) {
 
   const extraHtml = buildExtraDetailsHtml(unit);
   const resaleBoxHtml = buildResaleBoxHtml(unit);
+  const combinedExtraHtml = resaleBoxHtml + extraHtml;
 
   lightboxImagesRegistry[cardId] = images;
 
@@ -899,17 +900,16 @@ function unitCardHtml(unit) {
           <div class="card-specs">
             ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
           </div>
-          ${resaleBoxHtml}
         </div>
         <div class="unit-price-box">
           <div class="final-price">${formatPrice(unit["Price"])}</div>
           ${unit["Price per Meter"] ? `<div class="per-meter">${fmtNum(unit["Price per Meter"])} ج/م²</div>` : ""}
         </div>
-        ${extraHtml ? `
+        ${combinedExtraHtml ? `
         <button type="button" class="toggle-details-btn" onclick="toggleUnitDetails('${cardId}', this, '${(unit["Unit ID"] || "").replace(/'/g, "\\'")}')">
           <span>عرض التفاصيل الكاملة</span><span class="chevron">▾</span>
         </button>
-        <div class="unit-extra" id="${cardId}">${extraHtml}</div>
+        <div class="unit-extra" id="${cardId}">${combinedExtraHtml}</div>
         ` : ""}
         <div class="card-footer">
           <div class="action-row">
