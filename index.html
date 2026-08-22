@@ -453,6 +453,7 @@
     <a class="header-whatsapp" id="headerWhatsapp" href="#" target="_blank" rel="noopener">
       <span>💬</span><span class="full-text">تواصل معانا</span>
     </a>
+    <button type="button" id="adminLockBtn" title="دخول الأدمن" style="background:transparent;border:none;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;padding:6px;">🔐</button>
   </div>
   <div class="hero">
     <h2>وحدات ريسيل <span>بأسعار مميزة</span> جاهزة للمعاينة</h2>
@@ -670,6 +671,10 @@ function unitCardHtml(unit) {
             <a class="icon-btn" href="${buildShareLink(unit)}" target="_blank" rel="noopener">📤 WhatsApp</a>
             <button type="button" class="icon-btn" onclick="showSimilarUnits('${(unit["City"] || "").replace(/'/g, "\\'")}', '${(unit["Property Type"] || "").replace(/'/g, "\\'")}')">🔎 Similar</button>
           </div>
+          ${isAdminUnlocked() ? `
+          <a class="icon-btn" style="margin-top:8px;width:100%;background:var(--gold-light);border-color:var(--gold);" href="${APPS_SCRIPT_URL}?page=entry&edit=${encodeURIComponent(unit["Unit ID"] || "")}" target="_blank" rel="noopener">
+            ✏️ تعديل الوحدة
+          </a>` : ""}
         </div>
       </div>
     </div>
@@ -776,6 +781,44 @@ document.getElementById("resetFiltersBtn").addEventListener("click", function ()
 document.getElementById("fKeyword").addEventListener("keydown", function (e) {
   if (e.key === "Enter") loadUnits();
 });
+
+/* ============================================================
+ * وضع الأدمن (ظاهر ليك انت بس) - بيتفتح بـ PIN ويفضل محفوظ على
+ * نفس الجهاز/المتصفح لحد ما تقفله بنفسك من نفس الزرار
+ * ============================================================ */
+const ADMIN_FLAG_KEY = "resaleAdminUnlocked";
+
+function isAdminUnlocked() {
+  try { return localStorage.getItem(ADMIN_FLAG_KEY) === "1"; } catch (e) { return false; }
+}
+
+async function toggleAdminMode() {
+  if (isAdminUnlocked()) {
+    try { localStorage.removeItem(ADMIN_FLAG_KEY); } catch (e) {}
+    alert("تم قفل وضع الأدمن");
+    loadUnits();
+    return;
+  }
+
+  const pin = prompt("ادخل PIN الأدمن:");
+  if (!pin) return;
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=verifyPin&pin=" + encodeURIComponent(pin));
+    const data = await res.json();
+    if (data.success) {
+      try { localStorage.setItem(ADMIN_FLAG_KEY, "1"); } catch (e) {}
+      alert("تم فتح وضع الأدمن ✅ زرار التعديل هيظهر على كل الوحدات");
+      loadUnits();
+    } else {
+      alert("PIN غلط");
+    }
+  } catch (err) {
+    alert("تعذر التحقق من الـ PIN، تأكد من الاتصال بالإنترنت");
+  }
+}
+
+document.getElementById("adminLockBtn").addEventListener("click", toggleAdminMode);
 
 setHeaderWhatsapp();
 loadFilterOptions();
