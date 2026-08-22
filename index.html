@@ -32,19 +32,23 @@
     margin: 0;
     font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
     direction: rtl;
-    background: var(--bg);
     color: var(--text);
     font-size: 17px;
     line-height: 1.6;
+    background-image: linear-gradient(rgba(9,18,28,0.65), rgba(9,18,28,0.8)), url('city-bg.png');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: var(--navy-dark);
   }
   button, input, select { font-family: inherit; }
 
   /* ============ Header ============ */
   header {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    background: transparent;
     color: #fff;
     padding: 20px 20px 0;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
   }
   .header-top {
     max-width: 1200px;
@@ -161,9 +165,6 @@
   .filters-wrap {
     background: var(--card);
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 40;
   }
   .filters {
     max-width: 1200px;
@@ -231,7 +232,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--muted);
+    color: rgba(255,255,255,0.85);
     font-weight: 600;
     font-size: 15px;
   }
@@ -622,13 +623,13 @@
     margin: 0 auto;
     padding: 60px 20px;
     text-align: center;
-    color: var(--muted);
+    color: rgba(255,255,255,0.75);
   }
   .state-box .icon { font-size: 44px; margin-bottom: 12px; }
-  .state-box h3 { color: var(--navy); font-size: 19px; margin: 0 0 6px; }
+  .state-box h3 { color: #fff; font-size: 19px; margin: 0 0 6px; }
   .spinner {
     width: 34px; height: 34px;
-    border: 4px solid var(--border);
+    border: 4px solid rgba(255,255,255,0.2);
     border-top-color: var(--gold);
     border-radius: 50%;
     margin: 0 auto 14px;
@@ -639,8 +640,12 @@
   footer {
     text-align: center;
     padding: 26px 20px 34px;
-    color: var(--muted);
+    color: rgba(255,255,255,0.8);
     font-size: 13.5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
   }
 
   @media (max-width: 640px) {
@@ -674,7 +679,6 @@
     <h2>وحدات ريسيل <span class="gold-part">خدمة مجانية بالكامل</span></h2>
     <div class="hero-divider"></div>
     <p>نساعدك تلاقي وحدتك بدون عمولات — تصفّح الوحدات المعروضة وتواصل مع صاحبها مباشرة.</p>
-    <div class="visitor-badge"><span class="dot"></span> <span id="visitorCount">...</span> <span>زائر شاهدوا الموقع</span></div>
   </div>
 </header>
 
@@ -723,6 +727,7 @@
 
 <footer>
   خدمة عرض وحدات الريسيل من Digital Real Estate — مجانًا لوجه الله تعالى 🤍
+  <div class="visitor-badge"><span class="dot"></span> <span id="visitorCount">...</span> <span>زائر شاهدوا الموقع</span></div>
 </footer>
 
 <div class="edit-modal-overlay" id="editModalOverlay">
