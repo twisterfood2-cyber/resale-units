@@ -1229,12 +1229,12 @@ document.addEventListener("keydown", function (e) {
 });
 
 // استقبال رسالة نجاح التعديل من جوه الـ iframe (فورم الإدخال) وقفل النافذة
-// تلقائيًا + تحديث قائمة الوحدات عشان التعديل يبان على طول
+// تلقائيًا + إعادة تحميل الصفحة بالكامل عشان التعديل يبان فورًا
 window.addEventListener("message", function (e) {
   if (e.data && e.data.type === "unitEditSuccess") {
+    closeEditModal();
     setTimeout(function () {
-      closeEditModal();
-      loadUnits();
+      window.location.reload();
     }, 900); // نستنى شوية بسيط عشان المستخدم يشوف رسالة "تم الحفظ" جوه الفورم الأول
   }
 });
