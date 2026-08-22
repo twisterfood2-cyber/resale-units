@@ -20,6 +20,9 @@
     --muted: #6b7684;
     --whatsapp: #25d366;
     --whatsapp-dark: #1ea952;
+    --success-bg: #e3f3e9; --success-fg: #1e7145;
+    --warn-bg: #fbf1da; --warn-fg: #8a6200;
+    --error-bg: #fbe6e6; --error-fg: #b3261e;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -236,16 +239,43 @@
     gap: 10px;
     flex: 1;
   }
+
+  /* ============ صف علوي: رقم الوحدة + شارة الحالة ============ */
+  .unit-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .unit-id { font-size: 13px; color: var(--muted); font-weight: 700; }
+  .status-badge {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 800;
+    background: var(--success-bg);
+    color: var(--success-fg);
+  }
+  .status-badge.warn { background: var(--warn-bg); color: var(--warn-fg); }
+  .status-badge.error { background: var(--error-bg); color: var(--error-fg); }
+
   .card-title {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--navy);
     margin: 0;
+    text-align: left;
   }
   .card-sub {
-    font-size: 13.5px;
-    color: var(--muted);
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 700;
     margin: -6px 0 0;
+    text-align: left;
+  }
+  .unit-added {
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: left;
   }
   .card-price {
     font-size: 22px;
@@ -262,37 +292,58 @@
   .resale-current-box {
     background: linear-gradient(135deg, #1e7145 0%, #164f31 100%);
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 14px 16px;
   }
-  .resale-box-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 8px; }
-  .resale-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
-  .resale-item { display: flex; flex-direction: column; gap: 1px; }
-  .resale-label { font-size: 11px; color: rgba(255,255,255,0.75); }
-  .resale-value { font-size: 14.5px; font-weight: 800; color: #fff; }
+  .resale-box-title { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; text-align: left; }
+  .resale-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  .resale-item { display: flex; flex-direction: column; gap: 3px; text-align: left; }
+  .resale-label { font-size: 12px; color: rgba(255,255,255,0.75); }
+  .resale-value { font-size: 16px; font-weight: 800; color: #fff; }
   .resale-item.highlight .resale-value { color: var(--gold-light); }
 
   /* ============ صندوق السعر (نيفي) ============ */
   .unit-price-box {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
     border-radius: 12px;
-    padding: 14px 16px;
+    padding: 20px 16px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center;
   }
-  .unit-price-box .final-price { font-size: 23px; font-weight: 900; color: #fff; }
-  .unit-price-box .per-meter { font-size: 13px; font-weight: 700; color: var(--gold); margin-top: 4px; }
+  .unit-price-box .final-price { font-size: 26px; font-weight: 900; color: #fff; }
+  .unit-price-box .per-meter { font-size: 14px; font-weight: 700; color: var(--gold); margin-top: 6px; }
 
-  /* ============ تفاصيل إضافية (مقدم / أقساط / تسليم...) ============ */
+  /* ============ زرار "عرض التفاصيل الكاملة" القابل للطي ============ */
+  .toggle-details-btn {
+    width: 100%;
+    background: var(--bg);
+    color: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s ease;
+  }
+  .toggle-details-btn:hover { background: var(--gold-light); }
+  .toggle-details-btn .chevron { transition: transform 0.2s ease; font-size: 12px; }
+  .toggle-details-btn.open .chevron { transform: rotate(180deg); }
+
+  /* ============ تفاصيل إضافية (مقدم / أقساط / تسليم / ملاحظات...) ============ */
   .unit-extra {
+    display: none;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 14px;
-    line-height: 1.9;
+    padding: 14px;
+    font-size: 14.5px;
+    line-height: 2;
     color: var(--text);
+    text-align: right;
   }
-  .unit-extra div { margin-bottom: 2px; }
+  .unit-extra.open { display: block; }
+  .unit-extra div { margin-bottom: 3px; }
   .unit-extra div:last-child { margin-bottom: 0; }
   .unit-extra b { color: var(--navy); font-weight: 800; }
 
@@ -304,9 +355,9 @@
   .spec-chip {
     background: var(--gold-light);
     color: var(--navy);
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 5px 10px;
+    padding: 7px 12px;
     border-radius: 8px;
   }
   .card-footer {
@@ -500,42 +551,62 @@ function buildExtraDetailsHtml(unit) {
   if (unit["View"]) rows.push(`<div><b>الفيو:</b> ${unit["View"]}</div>`);
   if (unit["Other Payment Plans"] === "نعم") rows.push(`<div><b>✅ متاح أنظمة سداد أخرى</b></div>`);
   if (unit["Delivery Date"]) rows.push(`<div><b>التسليم:</b> ${unit["Delivery Date"]}</div>`);
+  if (unit["Resale Reason"]) rows.push(`<div><b>سبب البيع:</b> ${unit["Resale Reason"]}</div>`);
   if (unit["Notes"]) rows.push(`<div><b>ملاحظات:</b> ${unit["Notes"]}</div>`);
 
   if (rows.length === 0) return "";
-  return `<div class="unit-extra">${rows.join("")}</div>`;
+  return rows.join("");
 }
 
+let cardCounter = 0;
+
 function unitCardHtml(unit) {
+  cardCounter++;
+  const cardId = "extra-" + cardCounter;
+
   const images = String(unit["Images"] || "").split(",").map(s => s.trim()).filter(Boolean);
   const imgStyle = images.length ? `style="background-image:url('${images[0]}')"` : "";
-  const badge = unit["Listing Type"] === "ريسيل" ? "ريسيل" : "";
+  const status = unit["Status"] || "متاح";
+  const statusClass = status === "محجوز" ? "warn" : (status === "تم البيع" ? "error" : "");
 
   const specs = [];
-  if (unit["Unit Area (sqm)"]) specs.push(unit["Unit Area (sqm)"] + " م²");
-  if (unit["Rooms"]) specs.push(unit["Rooms"] + " غرف");
-  if (unit["Bathrooms"]) specs.push(unit["Bathrooms"] + " حمام");
-  if (unit["Floor"]) specs.push("الدور " + unit["Floor"]);
-  if (unit["Finishing"]) specs.push(unit["Finishing"]);
+  if (unit["Unit Area (sqm)"]) specs.push("📐 " + unit["Unit Area (sqm)"] + " م²");
+  if (unit["Rooms"]) specs.push("🛏 " + unit["Rooms"] + " غرف");
+  if (unit["Bathrooms"]) specs.push("🚿 " + unit["Bathrooms"] + " حمام");
+  if (unit["Floor"]) specs.push("🏢 دور " + unit["Floor"]);
+  if (unit["Finishing"]) specs.push("🎨 " + unit["Finishing"]);
+
+  const extraHtml = buildExtraDetailsHtml(unit);
+  const resaleBoxHtml = buildResaleBoxHtml(unit);
 
   return `
     <div class="card">
       <div class="card-img" ${imgStyle}>
         ${images.length ? "" : "📷 لا توجد صورة"}
-        ${badge ? `<span class="card-badge">${badge}</span>` : ""}
+        ${images.length > 1 ? `<span class="card-badge">📷 ${images.length} صور</span>` : ""}
       </div>
       <div class="card-body">
-        <h3 class="card-title">${unit["Project Name"] || "بدون اسم"}</h3>
-        <p class="card-sub">${unit["Developer Name"] || ""} — ${unit["City"] || ""} ${unit["Area/District"] ? "/ " + unit["Area/District"] : ""}</p>
+        <div class="unit-top">
+          <span class="status-badge ${statusClass}">${status}</span>
+          <span class="unit-id">${unit["Unit ID"] || ""}</span>
+        </div>
+        <h3 class="card-title">${unit["Property Type"] || ""} - ${unit["Project Name"] || unit["City"] || ""}</h3>
+        <p class="card-sub">📍 ${unit["City"] || ""}${unit["Area/District"] ? " - " + unit["Area/District"] : ""}</p>
+        ${unit["Date Added"] ? `<p class="unit-added">🕒 أُضيفت في ${unit["Date Added"]}${unit["Last Updated"] ? " - آخر تحديث: " + unit["Last Updated"] : ""}</p>` : ""}
         <div class="card-specs">
           ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
         </div>
-        ${buildResaleBoxHtml(unit)}
+        ${resaleBoxHtml}
         <div class="unit-price-box">
           <div class="final-price">${formatPrice(unit["Price"])}</div>
           ${unit["Price per Meter"] ? `<div class="per-meter">${fmtNum(unit["Price per Meter"])} ج/م²</div>` : ""}
         </div>
-        ${buildExtraDetailsHtml(unit)}
+        ${extraHtml ? `
+        <button type="button" class="toggle-details-btn" onclick="toggleUnitDetails('${cardId}', this)">
+          <span>عرض التفاصيل الكاملة</span><span class="chevron">▾</span>
+        </button>
+        <div class="unit-extra" id="${cardId}">${extraHtml}</div>
+        ` : ""}
         <div class="card-footer">
           <a class="card-whatsapp" href="${buildWhatsappLink(unit)}" target="_blank" rel="noopener">
             💬 تواصل عبر واتساب
@@ -544,6 +615,12 @@ function unitCardHtml(unit) {
       </div>
     </div>
   `;
+}
+
+function toggleUnitDetails(cardId, btn) {
+  const el = document.getElementById(cardId);
+  el.classList.toggle("open");
+  btn.classList.toggle("open");
 }
 
 function renderLoading() {
