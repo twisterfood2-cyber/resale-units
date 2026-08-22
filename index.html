@@ -168,25 +168,32 @@
   .filters {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
+    padding: 8px 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
     align-items: end;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .filter-field {
+    flex: 0 0 128px;
   }
   .filter-field label {
     display: block;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--muted);
     font-weight: 700;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
+    white-space: nowrap;
   }
   .filter-field select, .filter-field input {
     width: 100%;
-    padding: 11px 12px;
+    padding: 6px 8px;
     border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 15px;
+    border-radius: 8px;
+    font-size: 13px;
     background: var(--bg);
     color: var(--text);
     outline: none;
@@ -197,19 +204,21 @@
   }
   .filter-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex: 0 0 auto;
   }
   .btn {
-    padding: 11px 20px;
-    border-radius: 10px;
+    padding: 7px 14px;
+    border-radius: 8px;
     border: none;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     cursor: pointer;
     transition: transform 0.1s ease, background 0.15s ease;
+    white-space: nowrap;
   }
   .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--navy); color: #fff; flex: 1; }
+  .btn-primary { background: var(--navy); color: #fff; }
   .btn-primary:hover { background: var(--navy-dark); }
   .btn-ghost { background: var(--bg); color: var(--muted); border: 2px solid var(--border); }
   .btn-ghost:hover { background: var(--border); }
@@ -640,8 +649,6 @@
     .brand-badge { width: 60px; height: 60px; font-size: 28px; border-radius: 16px; }
     .brand-text h1 { font-size: 21px; }
     .brand-text p { font-size: 13px; }
-    .filters { grid-template-columns: repeat(2, 1fr); }
-    .filter-actions { grid-column: 1 / -1; }
   }
 </style>
 </head>
