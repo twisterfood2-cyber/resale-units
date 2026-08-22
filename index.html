@@ -257,6 +257,45 @@
     font-weight: 600;
     color: var(--muted);
   }
+
+  /* ============ صندوق الوضع المالي الحالي (أخضر) ============ */
+  .resale-current-box {
+    background: linear-gradient(135deg, #1e7145 0%, #164f31 100%);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .resale-box-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .resale-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .resale-item { display: flex; flex-direction: column; gap: 1px; }
+  .resale-label { font-size: 11px; color: rgba(255,255,255,0.75); }
+  .resale-value { font-size: 14.5px; font-weight: 800; color: #fff; }
+  .resale-item.highlight .resale-value { color: var(--gold-light); }
+
+  /* ============ صندوق السعر (نيفي) ============ */
+  .unit-price-box {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .unit-price-box .final-price { font-size: 23px; font-weight: 900; color: #fff; }
+  .unit-price-box .per-meter { font-size: 13px; font-weight: 700; color: var(--gold); margin-top: 4px; }
+
+  /* ============ تفاصيل إضافية (مقدم / أقساط / تسليم...) ============ */
+  .unit-extra {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .unit-extra div { margin-bottom: 2px; }
+  .unit-extra div:last-child { margin-bottom: 0; }
+  .unit-extra b { color: var(--navy); font-weight: 800; }
+
   .card-specs {
     display: flex;
     flex-wrap: wrap;
@@ -424,6 +463,49 @@ function formatPrice(n) {
   return num.toLocaleString("en-US") + " جنيه";
 }
 
+function fmtNum(n) {
+  const num = Number(n);
+  if (!num && num !== 0) return "";
+  return num.toLocaleString("en-US");
+}
+
+function buildResaleBoxHtml(unit) {
+  const purchasePPM = Number(unit["Resale Price Per Meter At Purchase"]) || 0;
+  const currentPPM = Number(unit["Resale Current Price Per Meter"]) || 0;
+  const ppmDiff = (purchasePPM > 0 && currentPPM > 0) ? (currentPPM - purchasePPM) : null;
+
+  const items = [];
+  if (unit["Resale Paid Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المدفوع حتى الآن</span><span class="resale-value">${fmtNum(unit["Resale Paid Amount"])} جنيه</span></div>`);
+  if (unit["Resale Remaining Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المتبقي على الوحدة</span><span class="resale-value">${fmtNum(unit["Resale Remaining Amount"])} جنيه</span></div>`);
+  if (unit["Resale Over Price"]) items.push(`<div class="resale-item highlight"><span class="resale-label">الأوفر المطلوب</span><span class="resale-value">${unit["Resale Over Price"]}</span></div>`);
+  if (unit["Resale Remaining Period"]) items.push(`<div class="resale-item"><span class="resale-label">الفترة المتبقية للسداد</span><span class="resale-value">${unit["Resale Remaining Period"]}</span></div>`);
+  if (purchasePPM) items.push(`<div class="resale-item"><span class="resale-label">سعر المتر عند الشراء</span><span class="resale-value">${fmtNum(purchasePPM)} ج/م²</span></div>`);
+  if (currentPPM) items.push(`<div class="resale-item"><span class="resale-label">سعر المتر الحالي بالشركة</span><span class="resale-value">${fmtNum(currentPPM)} ج/م²</span></div>`);
+  if (ppmDiff !== null) items.push(`<div class="resale-item highlight"><span class="resale-label">فرق سعر المتر</span><span class="resale-value">${ppmDiff >= 0 ? "+" : ""}${fmtNum(ppmDiff)} ج/م²</span></div>`);
+
+  if (items.length === 0) return "";
+  return `
+    <div class="resale-current-box">
+      <div class="resale-box-title">💰 الوضع المالي الحالي</div>
+      <div class="resale-row-grid">${items.join("")}</div>
+    </div>`;
+}
+
+function buildExtraDetailsHtml(unit) {
+  const rows = [];
+  if (unit["Payment Method"]) rows.push(`<div><b>الدفع:</b> ${unit["Payment Method"]}${unit["Installment Years"] ? " " + unit["Installment Years"] + " سنوات" : ""}</div>`);
+  if (unit["Down Payment"]) rows.push(`<div><b>المقدم:</b> (${unit["Down Payment"]}%) = ${fmtNum(unit["Down Payment Value"])} جنيه</div>`);
+  if (unit["Payment Count"]) rows.push(`<div><b>الدفعات:</b> ${unit["Payment Count"]} دفعة × ${fmtNum(unit["Payment Amount Value"])} جنيه${unit["Payment Schedule"] ? " - " + unit["Payment Schedule"] : ""}</div>`);
+  if (unit["Monthly Installment"]) rows.push(`<div><b>القسط الشهري التقريبي:</b> ${fmtNum(unit["Monthly Installment"])} جنيه/شهريًا</div>`);
+  if (unit["View"]) rows.push(`<div><b>الفيو:</b> ${unit["View"]}</div>`);
+  if (unit["Other Payment Plans"] === "نعم") rows.push(`<div><b>✅ متاح أنظمة سداد أخرى</b></div>`);
+  if (unit["Delivery Date"]) rows.push(`<div><b>التسليم:</b> ${unit["Delivery Date"]}</div>`);
+  if (unit["Notes"]) rows.push(`<div><b>ملاحظات:</b> ${unit["Notes"]}</div>`);
+
+  if (rows.length === 0) return "";
+  return `<div class="unit-extra">${rows.join("")}</div>`;
+}
+
 function unitCardHtml(unit) {
   const images = String(unit["Images"] || "").split(",").map(s => s.trim()).filter(Boolean);
   const imgStyle = images.length ? `style="background-image:url('${images[0]}')"` : "";
@@ -445,10 +527,15 @@ function unitCardHtml(unit) {
       <div class="card-body">
         <h3 class="card-title">${unit["Project Name"] || "بدون اسم"}</h3>
         <p class="card-sub">${unit["Developer Name"] || ""} — ${unit["City"] || ""} ${unit["Area/District"] ? "/ " + unit["Area/District"] : ""}</p>
-        <div class="card-price">${formatPrice(unit["Price"])}</div>
         <div class="card-specs">
           ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
         </div>
+        ${buildResaleBoxHtml(unit)}
+        <div class="unit-price-box">
+          <div class="final-price">${formatPrice(unit["Price"])}</div>
+          ${unit["Price per Meter"] ? `<div class="per-meter">${fmtNum(unit["Price per Meter"])} ج/م²</div>` : ""}
+        </div>
+        ${buildExtraDetailsHtml(unit)}
         <div class="card-footer">
           <a class="card-whatsapp" href="${buildWhatsappLink(unit)}" target="_blank" rel="noopener">
             💬 تواصل عبر واتساب
