@@ -135,6 +135,30 @@
     font-size: 16px;
     opacity: 0.9;
   }
+  .visitor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    padding: 8px 18px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .visitor-badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 1.5s infinite;
+  }
+  .visitor-badge b { color: var(--gold); font-size: 16px; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
 
   /* ============ Filters ============ */
   .filters-wrap {
@@ -503,6 +527,7 @@
     <h2>وحدات ريسيل <span class="gold-part">خدمة مجانية بالكامل</span></h2>
     <div class="hero-divider"></div>
     <p>نساعدك تلاقي وحدتك بدون عمولات — تصفّح الوحدات المعروضة وتواصل مع صاحبها مباشرة.</p>
+    <div class="visitor-badge"><span class="dot"></span> <span id="visitorCount">...</span> <span>زائر شاهدوا الموقع</span></div>
   </div>
 </header>
 
@@ -863,9 +888,49 @@ async function toggleAdminMode() {
 
 document.getElementById("adminLockBtn").addEventListener("click", toggleAdminMode);
 
+/* ============================================================
+ * عداد الزوار - بيتسجل مرة واحدة بس لكل جهاز، وبيتحدّث الرقم
+ * لحظيًا لكل زوار الموقع كل 20 ثانية
+ * ============================================================ */
+const VISITOR_FLAG_KEY = "resaleVisitorCounted";
+
+async function initVisitorCounter() {
+  let alreadyCounted = false;
+  try { alreadyCounted = localStorage.getItem(VISITOR_FLAG_KEY) === "1"; } catch (e) {}
+
+  try {
+    if (!alreadyCounted) {
+      const res = await fetch(APPS_SCRIPT_URL + "?action=visit");
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById("visitorCount").textContent = fmtNum(data.count);
+        try { localStorage.setItem(VISITOR_FLAG_KEY, "1"); } catch (e) {}
+      }
+    } else {
+      refreshVisitorCount();
+    }
+  } catch (err) {
+    console.error("تعذر تسجيل الزيارة", err);
+  }
+
+  // تحديث الرقم كل 20 ثانية عشان يبان "لايف" لكل زوار الموقع
+  setInterval(refreshVisitorCount, 20000);
+}
+
+async function refreshVisitorCount() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=visitorCount");
+    const data = await res.json();
+    if (data.success) document.getElementById("visitorCount").textContent = fmtNum(data.count);
+  } catch (err) {
+    // فشل التحديث الدوري مش مشكلة كبيرة، هيحاول تاني بعد 20 ثانية
+  }
+}
+
 setHeaderWhatsapp();
 loadFilterOptions();
 loadUnits();
+initVisitorCounter();
 </script>
 </body>
 </html>
