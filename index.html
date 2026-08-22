@@ -1149,12 +1149,45 @@ async function refreshVisitorCount() {
 /* ============================================================
  * نافذة تعديل الوحدة المنبثقة (iframe لفورم الإدخال في وضع تعديل)
  * ============================================================ */
-function openEditModal(unitId) {
+let editModalUnitId = null;
+let editModalOriginalLastUpdated = null;
+let editModalPollTimer = null;
+
+async function openEditModal(unitId) {
   const overlay = document.getElementById("editModalOverlay");
   const iframe = document.getElementById("editModalIframe");
+
+  editModalUnitId = unitId;
+  editModalOriginalLastUpdated = null;
+
+  // نسجّل "آخر تحديث" الحالي للوحدة قبل ما نفتح فورم التعديل، عشان
+  // نلاحظ لما يتغيّر بعد الحفظ (طريقة أضمن من انتظار رسالة من جوجل)
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=unitStatus&unitId=" + encodeURIComponent(unitId));
+    const data = await res.json();
+    if (data.success) editModalOriginalLastUpdated = data.lastUpdated;
+  } catch (err) {}
+
   iframe.src = APPS_SCRIPT_URL + "?page=entry&edit=" + encodeURIComponent(unitId);
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
+
+  clearInterval(editModalPollTimer);
+  editModalPollTimer = setInterval(checkEditModalUpdate, 2000);
+}
+
+async function checkEditModalUpdate() {
+  if (!editModalUnitId) return;
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=unitStatus&unitId=" + encodeURIComponent(editModalUnitId));
+    const data = await res.json();
+    if (data.success && editModalOriginalLastUpdated !== null && data.lastUpdated !== editModalOriginalLastUpdated) {
+      // "آخر تحديث" اتغيّر - يبقى الحفظ نجح فعلًا، نقفل ونعمل Reload
+      clearInterval(editModalPollTimer);
+      closeEditModal();
+      window.location.reload();
+    }
+  } catch (err) {}
 }
 
 function closeEditModal() {
@@ -1163,6 +1196,8 @@ function closeEditModal() {
   overlay.classList.remove("open");
   iframe.src = "about:blank";
   document.body.style.overflow = "";
+  clearInterval(editModalPollTimer);
+  editModalUnitId = null;
 }
 
 document.getElementById("editModalCloseBtn").addEventListener("click", closeEditModal);
