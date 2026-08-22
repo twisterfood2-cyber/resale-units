@@ -282,6 +282,15 @@
     flex: 1;
   }
 
+  /* ============ حاوية كل المحتوى قبل صندوق السعر - بنساوي ارتفاعها
+     بين الكروت المتجاورة في نفس الصف عشان صندوق السعر يبقى في محاذاة
+     أفقية واحدة على طول الصف (بالـ JS بعد الرندر) ============ */
+  .card-pre-price {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   /* ============ صف علوي: رقم الوحدة + شارة الحالة ============ */
   .unit-top {
     display: flex;
@@ -773,17 +782,19 @@ function unitCardHtml(unit) {
         ${images.length > 1 ? `<span class="card-badge">📷 ${images.length} صور</span>` : ""}
       </div>
       <div class="card-body">
-        <div class="unit-top">
-          <span class="status-badge ${statusClass}">${status}</span>
-          <span class="unit-id">${unit["Unit ID"] || ""}</span>
+        <div class="card-pre-price">
+          <div class="unit-top">
+            <span class="status-badge ${statusClass}">${status}</span>
+            <span class="unit-id">${unit["Unit ID"] || ""}</span>
+          </div>
+          <h3 class="card-title">${unit["Property Type"] || ""} - ${unit["Project Name"] || unit["City"] || ""}</h3>
+          <p class="card-sub">📍 ${unit["City"] || ""}${unit["Area/District"] ? " - " + unit["Area/District"] : ""}</p>
+          ${unit["Date Added"] ? `<p class="unit-added">🕒 أُضيفت في ${unit["Date Added"]}${unit["Last Updated"] ? " - آخر تحديث: " + unit["Last Updated"] : ""}</p>` : ""}
+          <div class="card-specs">
+            ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
+          </div>
+          ${resaleBoxHtml}
         </div>
-        <h3 class="card-title">${unit["Property Type"] || ""} - ${unit["Project Name"] || unit["City"] || ""}</h3>
-        <p class="card-sub">📍 ${unit["City"] || ""}${unit["Area/District"] ? " - " + unit["Area/District"] : ""}</p>
-        ${unit["Date Added"] ? `<p class="unit-added">🕒 أُضيفت في ${unit["Date Added"]}${unit["Last Updated"] ? " - آخر تحديث: " + unit["Last Updated"] : ""}</p>` : ""}
-        <div class="card-specs">
-          ${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}
-        </div>
-        ${resaleBoxHtml}
         <div class="unit-price-box">
           <div class="final-price">${formatPrice(unit["Price"])}</div>
           ${unit["Price per Meter"] ? `<div class="per-meter">${fmtNum(unit["Price per Meter"])} ج/م²</div>` : ""}
@@ -847,7 +858,42 @@ function renderUnits(units) {
   if (units.length === 0) { renderEmpty(); return; }
   document.getElementById("content").innerHTML =
     `<div class="grid">${units.map(unitCardHtml).join("")}</div>`;
+  alignPriceBoxes();
 }
+
+/**
+ * بتساوي ارتفاع ".card-pre-price" بين كل الكروت اللي في نفس الصف
+ * (بحسب موقعها الفعلي على الشاشة)، عشان صندوق السعر (النيفي) يبقى
+ * دايمًا في نفس المحاذاة الأفقية بين الوحدات المتجاورة، مهما اختلف
+ * طول العنوان أو عدد بيانات الصندوق الأخضر بين وحدة وتانية
+ */
+function alignPriceBoxes() {
+  const wrappers = Array.from(document.querySelectorAll(".card-pre-price"));
+  if (wrappers.length === 0) return;
+
+  // تصفير أي ارتفاع سابق قبل ما نقيس من جديد
+  wrappers.forEach(w => { w.style.minHeight = ""; });
+
+  // تجميع الكروت حسب صفها الفعلي على الشاشة (نفس الـ top تقريبًا)
+  const rows = new Map();
+  wrappers.forEach(w => {
+    const top = Math.round(w.closest(".card").getBoundingClientRect().top);
+    if (!rows.has(top)) rows.set(top, []);
+    rows.get(top).push(w);
+  });
+
+  rows.forEach(group => {
+    if (group.length < 2) return; // مفيش داعي نساوي كارت لوحده
+    const maxH = Math.max(...group.map(w => w.offsetHeight));
+    group.forEach(w => { w.style.minHeight = maxH + "px"; });
+  });
+}
+
+let alignResizeTimer = null;
+window.addEventListener("resize", function () {
+  clearTimeout(alignResizeTimer);
+  alignResizeTimer = setTimeout(alignPriceBoxes, 200);
+});
 
 function populateSelect(id, values) {
   const el = document.getElementById(id);
