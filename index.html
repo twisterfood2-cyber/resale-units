@@ -603,6 +603,13 @@
   }
   .edit-btn-row:hover { background: var(--gold); color: #fff; }
 
+  .views-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
   /* ============ States ============ */
   .state-box {
     max-width: 1200px;
@@ -889,7 +896,7 @@ function unitCardHtml(unit) {
           ${unit["Price per Meter"] ? `<div class="per-meter">${fmtNum(unit["Price per Meter"])} ج/م²</div>` : ""}
         </div>
         ${extraHtml ? `
-        <button type="button" class="toggle-details-btn" onclick="toggleUnitDetails('${cardId}', this)">
+        <button type="button" class="toggle-details-btn" onclick="toggleUnitDetails('${cardId}', this, '${(unit["Unit ID"] || "").replace(/'/g, "\\'")}')">
           <span>عرض التفاصيل الكاملة</span><span class="chevron">▾</span>
         </button>
         <div class="unit-extra" id="${cardId}">${extraHtml}</div>
@@ -904,16 +911,32 @@ function unitCardHtml(unit) {
           <button type="button" class="edit-btn-row" onclick="openEditModal('${(unit["Unit ID"] || "").replace(/'/g, "\\'")}')" style="border:1px solid var(--gold);width:100%;cursor:pointer;">
             ✏️ تعديل الوحدة
           </button>` : ""}
+          <div class="views-note" id="views-${cardId}">👁 شوهدت التفاصيل ${fmtNum(unit["Detail View Count"] || 0)} ${(unit["Detail View Count"] || 0) === 1 ? "مرة" : "مرات"}</div>
         </div>
       </div>
     </div>
   `;
 }
 
-function toggleUnitDetails(cardId, btn) {
+function toggleUnitDetails(cardId, btn, unitId) {
   const el = document.getElementById(cardId);
+  const isOpening = !el.classList.contains("open");
   el.classList.toggle("open");
   btn.classList.toggle("open");
+  if (isOpening) trackDetailView(unitId, cardId);
+}
+
+async function trackDetailView(unitId, cardId) {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=trackView&unitId=" + encodeURIComponent(unitId));
+    const data = await res.json();
+    if (data.success) {
+      const el = document.getElementById("views-" + cardId);
+      if (el) el.textContent = "👁 شوهدت التفاصيل " + fmtNum(data.count) + " " + (data.count === 1 ? "مرة" : "مرات");
+    }
+  } catch (err) {
+    // فشل تسجيل المشاهدة مش مشكلة كبيرة، العداد هيتحدث في المرة الجاية
+  }
 }
 
 function renderLoading() {
