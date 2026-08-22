@@ -834,7 +834,6 @@ function buildExtraDetailsHtml(unit) {
   if (unit["View"]) rows.push(`<div><b>الفيو:</b> ${unit["View"]}</div>`);
   if (unit["Other Payment Plans"] === "نعم") rows.push(`<div><b>✅ متاح أنظمة سداد أخرى</b></div>`);
   if (unit["Delivery Date"]) rows.push(`<div><b>التسليم:</b> ${unit["Delivery Date"]}</div>`);
-  if (unit["Resale Reason"]) rows.push(`<div><b>سبب البيع:</b> ${unit["Resale Reason"]}</div>`);
   if (unit["Notes"]) rows.push(`<div><b>ملاحظات:</b> ${unit["Notes"]}</div>`);
 
   if (rows.length === 0) return "";
