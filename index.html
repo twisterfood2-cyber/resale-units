@@ -100,18 +100,26 @@
 
   /* ============ Hero ============ */
   .hero {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 28px 20px 32px;
+    padding: 34px 20px 38px;
     text-align: center;
   }
   .hero h2 {
-    font-size: clamp(24px, 4vw, 34px);
+    font-size: clamp(28px, 5vw, 44px);
     font-weight: 900;
-    margin: 0 0 10px;
-    line-height: 1.35;
+    margin: 0 0 14px;
+    line-height: 1.4;
+    letter-spacing: -0.3px;
   }
-  .hero h2 span { color: var(--gold); }
+  .hero h2 .gold-part { color: var(--gold); }
+  .hero-divider {
+    width: 70px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 999px;
+    margin: 0 auto 16px;
+  }
   .hero p {
     margin: 0 auto;
     max-width: 620px;
@@ -479,8 +487,9 @@
     <button type="button" id="adminLockBtn" title="دخول الأدمن" style="background:transparent;border:none;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;padding:6px;">🔐</button>
   </div>
   <div class="hero">
-    <h2>وحدات ريسيل <span>بأسعار مميزة</span> جاهزة للمعاينة</h2>
-    <p>تصفّح الوحدات المعروضة للبيع من أصحابها مباشرة، وتواصل معانا في أي وقت لمعرفة تفاصيل أكتر — الخدمة مجانية بالكامل.</p>
+    <h2>وحدات ريسيل <span class="gold-part">خدمة مجانية بالكامل</span></h2>
+    <div class="hero-divider"></div>
+    <p>نساعدك تلاقي وحدتك بدون عمولات — تصفّح الوحدات المعروضة وتواصل مع صاحبها مباشرة.</p>
   </div>
 </header>
 
