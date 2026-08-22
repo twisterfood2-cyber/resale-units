@@ -810,15 +810,16 @@ function fmtNum(n) {
 }
 
 function buildResaleBoxHtml(unit) {
-  const purchasePPM = Number(unit["Resale Price Per Meter At Purchase"]) || 0;
+  const isCash = unit["Resale Payment Type"] === "كاش";
+  const purchasePPM = isCash ? 0 : (Number(unit["Resale Price Per Meter At Purchase"]) || 0);
   const currentPPM = Number(unit["Resale Current Price Per Meter"]) || 0;
   const ppmDiff = (purchasePPM > 0 && currentPPM > 0) ? (currentPPM - purchasePPM) : null;
 
   const items = [];
-  if (unit["Resale Paid Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المدفوع حتى الآن</span><span class="resale-value">${fmtNum(unit["Resale Paid Amount"])} جنيه</span></div>`);
-  if (unit["Resale Remaining Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المتبقي على الوحدة</span><span class="resale-value">${fmtNum(unit["Resale Remaining Amount"])} جنيه</span></div>`);
+  if (!isCash && unit["Resale Paid Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المدفوع حتى الآن</span><span class="resale-value">${fmtNum(unit["Resale Paid Amount"])} جنيه</span></div>`);
+  if (!isCash && unit["Resale Remaining Amount"]) items.push(`<div class="resale-item"><span class="resale-label">المتبقي على الوحدة</span><span class="resale-value">${fmtNum(unit["Resale Remaining Amount"])} جنيه</span></div>`);
   if (unit["Resale Over Price"]) items.push(`<div class="resale-item highlight"><span class="resale-label">الأوفر المطلوب</span><span class="resale-value">${unit["Resale Over Price"]}</span></div>`);
-  if (unit["Resale Remaining Period"]) items.push(`<div class="resale-item"><span class="resale-label">الفترة المتبقية للسداد</span><span class="resale-value">${unit["Resale Remaining Period"]}</span></div>`);
+  if (!isCash && unit["Resale Remaining Period"]) items.push(`<div class="resale-item"><span class="resale-label">الفترة المتبقية للسداد</span><span class="resale-value">${unit["Resale Remaining Period"]}</span></div>`);
   if (purchasePPM) items.push(`<div class="resale-item"><span class="resale-label">سعر المتر عند الشراء</span><span class="resale-value">${fmtNum(purchasePPM)} ج/م²</span></div>`);
   if (currentPPM) items.push(`<div class="resale-item"><span class="resale-label">سعر المتر الحالي بالشركة</span><span class="resale-value">${fmtNum(currentPPM)} ج/م²</span></div>`);
   if (ppmDiff !== null) items.push(`<div class="resale-item highlight"><span class="resale-label">فرق سعر المتر</span><span class="resale-value">${ppmDiff >= 0 ? "+" : ""}${fmtNum(ppmDiff)} ج/م²</span></div>`);
