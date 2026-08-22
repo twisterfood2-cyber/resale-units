@@ -61,26 +61,34 @@
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
   }
   .brand-badge {
-    width: 44px; height: 44px;
-    border-radius: 12px;
+    width: 88px; height: 88px;
+    border-radius: 22px;
     background: var(--gold);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 20px; color: var(--navy);
+    font-weight: 900; font-size: 40px; color: var(--navy);
     flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
   }
   .brand-text h1 {
     margin: 0;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 800;
+    letter-spacing: 0.3px;
   }
   .brand-text p {
-    margin: 2px 0 0;
-    font-size: 13px;
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--gold-light);
-    opacity: 0.85;
+    opacity: 0.9;
+  }
+  .header-right-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   .header-whatsapp {
     display: flex;
@@ -465,6 +473,9 @@
   @media (max-width: 640px) {
     .header-top { flex-wrap: wrap; }
     .header-whatsapp span.full-text { display: none; }
+    .brand-badge { width: 60px; height: 60px; font-size: 28px; border-radius: 16px; }
+    .brand-text h1 { font-size: 21px; }
+    .brand-text p { font-size: 13px; }
     .filters { grid-template-columns: repeat(2, 1fr); }
     .filter-actions { grid-column: 1 / -1; }
   }
@@ -477,14 +488,16 @@
     <div class="brand">
       <div class="brand-badge">D</div>
       <div class="brand-text">
-        <h1>وحدات ريسيل</h1>
+        <h1>Resale Units</h1>
         <p>Digital Real Estate</p>
       </div>
     </div>
-    <a class="header-whatsapp" id="headerWhatsapp" href="#" target="_blank" rel="noopener">
-      <span>💬</span><span class="full-text">تواصل معانا</span>
-    </a>
-    <button type="button" id="adminLockBtn" title="دخول الأدمن" style="background:transparent;border:none;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;padding:6px;">🔐</button>
+    <div class="header-right-group">
+      <a class="header-whatsapp" id="headerWhatsapp" href="#" target="_blank" rel="noopener">
+        <span>💬</span><span class="full-text">تواصل معانا</span>
+      </a>
+      <button type="button" id="adminLockBtn" title="دخول الأدمن" style="background:transparent;border:none;color:rgba(255,255,255,0.35);font-size:16px;cursor:pointer;padding:6px;">🔐</button>
+    </div>
   </div>
   <div class="hero">
     <h2>وحدات ريسيل <span class="gold-part">خدمة مجانية بالكامل</span></h2>
