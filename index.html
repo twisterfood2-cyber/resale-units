@@ -826,6 +826,7 @@ function buildResaleBoxHtml(unit) {
 
 function buildExtraDetailsHtml(unit) {
   const rows = [];
+  if (unit["Developer Name"]) rows.push(`<div><b>المطور:</b> ${unit["Developer Name"]}</div>`);
   if (unit["Payment Method"]) rows.push(`<div><b>الدفع:</b> ${unit["Payment Method"]}${unit["Installment Years"] ? " " + unit["Installment Years"] + " سنوات" : ""}</div>`);
   if (unit["Down Payment"]) rows.push(`<div><b>المقدم:</b> (${unit["Down Payment"]}%) = ${fmtNum(unit["Down Payment Value"])} جنيه</div>`);
   if (unit["Payment Count"]) rows.push(`<div><b>الدفعات:</b> ${unit["Payment Count"]} دفعة × ${fmtNum(unit["Payment Amount Value"])} جنيه${unit["Payment Schedule"] ? " - " + unit["Payment Schedule"] : ""}</div>`);
