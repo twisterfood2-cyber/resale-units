@@ -372,6 +372,57 @@
   .toggle-details-btn .chevron { transition: transform 0.2s ease; font-size: 12px; }
   .toggle-details-btn.open .chevron { transform: rotate(180deg); }
 
+  /* ============ نافذة تعديل الوحدة المنبثقة ============ */
+  .edit-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,20,30,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .edit-modal-overlay.open { display: flex; }
+  .edit-modal-box {
+    background: var(--bg);
+    width: 100%;
+    max-width: 760px;
+    height: 92vh;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .edit-modal-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .edit-modal-header span { font-weight: 800; font-size: 15px; }
+  .edit-modal-close {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .edit-modal-close:hover { background: rgba(255,255,255,0.25); }
+  .edit-modal-box iframe {
+    flex: 1;
+    border: none;
+    width: 100%;
+  }
+
   /* ============ تفاصيل إضافية (مقدم / أقساط / تسليم / ملاحظات...) ============ */
   .unit-extra {
     display: none;
@@ -578,6 +629,16 @@
   خدمة عرض وحدات الريسيل من Digital Real Estate — مجانًا لوجه الله تعالى 🤍
 </footer>
 
+<div class="edit-modal-overlay" id="editModalOverlay">
+  <div class="edit-modal-box">
+    <div class="edit-modal-header">
+      <span>✏️ تعديل الوحدة</span>
+      <button type="button" class="edit-modal-close" id="editModalCloseBtn">✕</button>
+    </div>
+    <iframe id="editModalIframe" src="about:blank"></iframe>
+  </div>
+</div>
+
 <script>
 /* ============================================================
  * ⚠️ الإعداد الوحيد المطلوب: الصق رابط الـ Web App بتاع Apps Script هنا
@@ -740,9 +801,9 @@ function unitCardHtml(unit) {
             <button type="button" class="icon-btn" onclick="showSimilarUnits('${(unit["City"] || "").replace(/'/g, "\\'")}', '${(unit["Property Type"] || "").replace(/'/g, "\\'")}')">🔎 مشابه</button>
           </div>
           ${isAdminUnlocked() ? `
-          <a class="edit-btn-row" href="${APPS_SCRIPT_URL}?page=entry&edit=${encodeURIComponent(unit["Unit ID"] || "")}" target="_blank" rel="noopener">
+          <button type="button" class="edit-btn-row" onclick="openEditModal('${(unit["Unit ID"] || "").replace(/'/g, "\\'")}')" style="border:1px solid var(--gold);width:100%;cursor:pointer;">
             ✏️ تعديل الوحدة
-          </a>` : ""}
+          </button>` : ""}
         </div>
       </div>
     </div>
@@ -926,6 +987,41 @@ async function refreshVisitorCount() {
     // فشل التحديث الدوري مش مشكلة كبيرة، هيحاول تاني بعد 20 ثانية
   }
 }
+
+/* ============================================================
+ * نافذة تعديل الوحدة المنبثقة (iframe لفورم الإدخال في وضع تعديل)
+ * ============================================================ */
+function openEditModal(unitId) {
+  const overlay = document.getElementById("editModalOverlay");
+  const iframe = document.getElementById("editModalIframe");
+  iframe.src = APPS_SCRIPT_URL + "?page=entry&edit=" + encodeURIComponent(unitId);
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeEditModal() {
+  const overlay = document.getElementById("editModalOverlay");
+  const iframe = document.getElementById("editModalIframe");
+  overlay.classList.remove("open");
+  iframe.src = "about:blank";
+  document.body.style.overflow = "";
+}
+
+document.getElementById("editModalCloseBtn").addEventListener("click", closeEditModal);
+document.getElementById("editModalOverlay").addEventListener("click", function (e) {
+  if (e.target === this) closeEditModal();
+});
+
+// استقبال رسالة نجاح التعديل من جوه الـ iframe (فورم الإدخال) وقفل النافذة
+// تلقائيًا + تحديث قائمة الوحدات عشان التعديل يبان على طول
+window.addEventListener("message", function (e) {
+  if (e.data && e.data.type === "unitEditSuccess") {
+    setTimeout(function () {
+      closeEditModal();
+      loadUnits();
+    }, 900); // نستنى شوية بسيط عشان المستخدم يشوف رسالة "تم الحفظ" جوه الفورم الأول
+  }
+});
 
 setHeaderWhatsapp();
 loadFilterOptions();
