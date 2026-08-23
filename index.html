@@ -26,8 +26,8 @@
 <meta name="twitter:description" content="تصفّح أحدث وحدات الريسيل المتاحة للبيع وتواصل مباشرة مع أصحابها بدون عمولات.">
 <meta name="twitter:image" content="https://resale-units.vercel.app/city-bg.png">
 
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9992e'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-size='55' font-weight='900' fill='%230f2942' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9992e'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-size='55' font-weight='900' fill='%230f2942' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -87,13 +87,16 @@
     gap: 16px;
   }
   .brand-badge {
-    width: 88px; height: 88px;
-    border-radius: 22px;
-    background: var(--gold);
+    height: 84px;
+    width: auto;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 40px; color: var(--navy);
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+  .brand-badge img {
+    height: 100%;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.35));
   }
   .brand-text h1 {
     margin: 0;
@@ -696,7 +699,7 @@
   @media (max-width: 640px) {
     .header-top { flex-wrap: wrap; }
     .header-whatsapp span.full-text { display: none; }
-    .brand-badge { width: 60px; height: 60px; font-size: 28px; border-radius: 16px; }
+    .brand-badge { height: 58px; }
     .brand-text h1 { font-size: 21px; }
     .brand-text p { font-size: 13px; }
   }
@@ -707,7 +710,7 @@
 <header>
   <div class="header-top">
     <div class="brand">
-      <div class="brand-badge">D</div>
+      <div class="brand-badge"><img src="logo.png" alt="Digital Real Estate"></div>
       <div class="brand-text">
         <h1>Resale Units</h1>
         <p>Digital Real Estate</p>
