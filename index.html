@@ -811,10 +811,6 @@ function buildWhatsappLink(unit) {
   return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
 }
 
-/**
- * مشاركة تفاصيل الوحدة عبر واتساب - من غير رقم محدد، عشان العميل
- * يختار هو يبعتها لمين (صديق، قريب، أي حد يهمه العرض)
- */
 function buildUnitDirectLink(unitId) {
   const url = new URL(window.location.href);
   url.search = "";
@@ -822,7 +818,7 @@ function buildUnitDirectLink(unitId) {
   return url.toString();
 }
 
-function buildShareLink(unit) {
+function buildShareText(unit) {
   const lines = [
     `🏠 ${unit["Property Type"] || ""} - ${unit["Project Name"] || ""}`,
     `📍 ${unit["City"] || ""}${unit["Area/District"] ? " - " + unit["Area/District"] : ""}`,
@@ -832,7 +828,59 @@ function buildShareLink(unit) {
     "شاهد كل التفاصيل هنا:",
     buildUnitDirectLink(unit["Unit ID"])
   ].filter(Boolean);
-  return "https://wa.me/?text=" + encodeURIComponent(lines.join("\n"));
+  return lines.join("\n");
+}
+
+function buildShareLink(unit) {
+  return "https://wa.me/?text=" + encodeURIComponent(buildShareText(unit));
+}
+
+const unitShareRegistry = {}; // cardId -> { text, imageUrl }
+
+/**
+ * مشاركة ذكية للوحدة:
+ * - على الموبايل (متصفحات بتدعم Web Share API + مشاركة ملفات): بتفتح
+ *   شاشة المشاركة الأصلية للجهاز، وتبعت الصورة الأولى + النص مع بعض
+ * - على اللابتوب أو أي متصفح مش بيدعم مشاركة الصور: بترجع تلقائيًا
+ *   لنفس طريقة واتساب بنص + رابط بس (زي ما كانت شغالة)
+ */
+async function shareUnit(cardId) {
+  const data = unitShareRegistry[cardId];
+  if (!data) return;
+
+  const openWhatsappFallback = function () {
+    window.open("https://wa.me/?text=" + encodeURIComponent(data.text), "_blank");
+  };
+
+  // مفيش دعم لـ Web Share API خالص (أغلب متصفحات اللابتوب) - نروح على طول للرابط
+  if (!navigator.share) {
+    openWhatsappFallback();
+    return;
+  }
+
+  // فيه صورة، ونحاول نشاركها كملف مع النص (بيشتغل غالبًا على الموبايل بس)
+  if (data.imageUrl && navigator.canShare) {
+    try {
+      const res = await fetch(data.imageUrl);
+      const blob = await res.blob();
+      const file = new File([blob], "unit.jpg", { type: blob.type || "image/jpeg" });
+
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], text: data.text, title: "وحدة ريسيل" });
+        return;
+      }
+    } catch (err) {
+      // فشل تحميل/مشاركة الصورة (مشكلة شبكة أو CORS) - نكمل على النص بس تحت
+    }
+  }
+
+  // مفيش صورة، أو فشلت مشاركة الملف - نجرب مشاركة نصية عبر نفس الـ API
+  try {
+    await navigator.share({ text: data.text, title: "وحدة ريسيل" });
+  } catch (err) {
+    // المستخدم لغى المشاركة، أو حصل خطأ - مفيش داعي نعمل حاجة زيادة
+    if (err && err.name !== "AbortError") openWhatsappFallback();
+  }
 }
 
 /**
@@ -929,6 +977,7 @@ function unitCardHtml(unit) {
   const combinedExtraHtml = resaleBoxHtml + extraHtml;
 
   lightboxImagesRegistry[cardId] = images;
+  unitShareRegistry[cardId] = { text: buildShareText(unit), imageUrl: images[0] || null };
 
   return `
     <div class="card" data-unit-id="${(unit["Unit ID"] || "").replace(/"/g, "")}">
@@ -962,7 +1011,7 @@ function unitCardHtml(unit) {
         <div class="card-footer">
           <div class="action-row">
             <a class="card-whatsapp" href="${buildWhatsappLink(unit)}" target="_blank" rel="noopener">💬 تواصل</a>
-            <a class="icon-btn" href="${buildShareLink(unit)}" target="_blank" rel="noopener">📤 مشاركة</a>
+            <button type="button" class="icon-btn" onclick="shareUnit('${cardId}')">📤 مشاركة</button>
             <button type="button" class="icon-btn" onclick="showSimilarUnits('${(unit["City"] || "").replace(/'/g, "\\'")}', '${(unit["Property Type"] || "").replace(/'/g, "\\'")}')">🔎 مشابه</button>
           </div>
           ${isAdminUnlocked() ? `
