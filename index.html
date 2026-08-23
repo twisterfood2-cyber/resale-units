@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>وحدات ريسيل | Digital Real Estate</title>
+<title>وحدات ريسيل للبيع | Digital Real Estate - خدمة مجانية بالكامل</title>
+<meta name="description" content="تصفّح أحدث وحدات الريسيل المتاحة للبيع في العاصمة الإدارية الجديدة والقاهرة الجديدة والساحل الشمالي. تواصل مباشرة مع أصحاب الوحدات بدون عمولات - خدمة مجانية بالكامل من Digital Real Estate.">
+<meta name="keywords" content="ريسيل, وحدات للبيع, العاصمة الإدارية, القاهرة الجديدة, الساحل الشمالي, عقارات مصر, شقق للبيع">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://resale-units.vercel.app/">
+
+<!-- Open Graph (فيسبوك/واتساب/لينكدإن) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="وحدات ريسيل للبيع | Digital Real Estate">
+<meta property="og:description" content="تصفّح أحدث وحدات الريسيل المتاحة للبيع وتواصل مباشرة مع أصحابها بدون عمولات - خدمة مجانية بالكامل.">
+<meta property="og:url" content="https://resale-units.vercel.app/">
+<meta property="og:locale" content="ar_EG">
+<meta property="og:site_name" content="Digital Real Estate">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="وحدات ريسيل للبيع | Digital Real Estate">
+<meta name="twitter:description" content="تصفّح أحدث وحدات الريسيل المتاحة للبيع وتواصل مباشرة مع أصحابها بدون عمولات.">
+
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9992e'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-size='55' font-weight='900' fill='%230f2942' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c9992e'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-size='55' font-weight='900' fill='%230f2942' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -258,6 +276,10 @@
   .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(15,41,66,0.12);
+  }
+  .card.highlight-target {
+    box-shadow: 0 0 0 3px var(--gold), 0 10px 30px rgba(201,153,46,0.35);
+    transition: box-shadow 0.3s ease;
   }
   .card-img {
     width: 100%;
@@ -637,6 +659,23 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ============ Skeleton Loading ============ */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.18) 37%, rgba(255,255,255,0.08) 63%);
+    background-size: 400% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+    border-radius: 8px;
+  }
+  .card.skeleton-card { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+  .sk-img { width: 100%; aspect-ratio: 4/3; border-radius: 0; }
+  .sk-line { border-radius: 6px; margin-bottom: 4px; }
+  .sk-chip { width: 60px; height: 26px; border-radius: 8px; }
+  .sk-box { width: 100%; height: 64px; border-radius: 12px; margin-top: 4px; }
+  @keyframes skeleton-shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   footer {
     text-align: center;
     padding: 26px 20px 34px;
@@ -774,6 +813,13 @@ function buildWhatsappLink(unit) {
  * مشاركة تفاصيل الوحدة عبر واتساب - من غير رقم محدد، عشان العميل
  * يختار هو يبعتها لمين (صديق، قريب، أي حد يهمه العرض)
  */
+function buildUnitDirectLink(unitId) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.searchParams.set("unit", unitId);
+  return url.toString();
+}
+
 function buildShareLink(unit) {
   const lines = [
     `🏠 ${unit["Property Type"] || ""} - ${unit["Project Name"] || ""}`,
@@ -782,7 +828,7 @@ function buildShareLink(unit) {
     `💰 ${formatPrice(unit["Price"])}`,
     "",
     "شاهد كل التفاصيل هنا:",
-    window.location.href
+    buildUnitDirectLink(unit["Unit ID"])
   ].filter(Boolean);
   return "https://wa.me/?text=" + encodeURIComponent(lines.join("\n"));
 }
@@ -883,7 +929,7 @@ function unitCardHtml(unit) {
   lightboxImagesRegistry[cardId] = images;
 
   return `
-    <div class="card">
+    <div class="card" data-unit-id="${(unit["Unit ID"] || "").replace(/"/g, "")}">
       <div class="card-img" ${imgStyle} onclick="openLightbox('${cardId}', 0)">
         ${images.length ? "" : "📷 لا توجد صورة"}
         ${images.length > 1 ? `<span class="card-badge">📷 ${images.length} صور</span>` : ""}
@@ -950,11 +996,24 @@ async function trackDetailView(unitId, cardId) {
 }
 
 function renderLoading() {
-  document.getElementById("content").innerHTML = `
-    <div class="state-box">
-      <div class="spinner"></div>
-      <h3>جاري تحميل الوحدات...</h3>
+  const skeletonCard = `
+    <div class="card skeleton-card">
+      <div class="skeleton sk-img"></div>
+      <div class="card-body">
+        <div class="skeleton sk-line" style="width:40%;height:20px;"></div>
+        <div class="skeleton sk-line" style="width:70%;height:22px;"></div>
+        <div class="skeleton sk-line" style="width:50%;height:16px;"></div>
+        <div style="display:flex;gap:8px;">
+          <div class="skeleton sk-chip"></div>
+          <div class="skeleton sk-chip"></div>
+          <div class="skeleton sk-chip"></div>
+        </div>
+        <div class="skeleton sk-box"></div>
+        <div class="skeleton sk-box" style="height:44px;"></div>
+      </div>
     </div>`;
+  document.getElementById("content").innerHTML =
+    `<div class="grid">${skeletonCard.repeat(6)}</div>`;
 }
 
 function renderError(msg) {
@@ -981,6 +1040,29 @@ function renderUnits(units) {
   document.getElementById("content").innerHTML =
     `<div class="grid">${units.map(unitCardHtml).join("")}</div>`;
   alignPriceBoxes();
+  openUnitFromUrlIfPresent();
+}
+
+/**
+ * لو الرابط فيه ?unit=RS-0001، نلاقي الكارت بتاعها، نعمل سكرول ليها،
+ * ونفتح "التفاصيل الكاملة" بتاعتها تلقائيًا - عشان لينكات المشاركة
+ * توصل صاحبها على طول لتفاصيل الوحدة من غير ما يدور
+ */
+function openUnitFromUrlIfPresent() {
+  const params = new URLSearchParams(window.location.search);
+  const unitId = params.get("unit");
+  if (!unitId) return;
+
+  const card = document.querySelector(`[data-unit-id="${CSS.escape(unitId)}"]`);
+  if (!card) return;
+
+  setTimeout(function () {
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.add("highlight-target");
+    const toggleBtn = card.querySelector(".toggle-details-btn");
+    if (toggleBtn && !toggleBtn.classList.contains("open")) toggleBtn.click();
+    setTimeout(function () { card.classList.remove("highlight-target"); }, 2500);
+  }, 300);
 }
 
 /**
